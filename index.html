@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>English Reading Project</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        .library-room {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #d4af37;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items at the top */
+            z-index: 1;
+        }
+        .book-stand {
+            width: 60%;
+            height: auto;
+            display: grid;
+            grid-template-rows: repeat(12, 1fr);
+            gap: 10px;
+            padding: 10px;
+            background-color: #8B4513;
+            border: 5px solid #654321;
+            border-radius: 10px;
+            margin-top: 20px; /* Space from the top */
+        }
+        .shelf {
+            background-color: #b5651d;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+        .book {
+            width: 40px;
+            height: 60px;
+            background-color: #3498db;
+            border: 2px solid #2980b9;
+            cursor: pointer;
+        }
+        .book:hover {
+            background-color: #2980b9;
+        }
+        .book-content {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            background-color: white;
+            border: 5px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: scroll;
+            z-index: 2;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        a-scene {
+            width: 100%;
+            height: 100vh; /* Full height for AR */
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0; /* Behind the bookshelf */
+        }
+    </style>
+</head>
+<body>
+    <div class="library-room">
+        <div class="book-stand">
+            <!-- Shelves -->
+            <div class="shelf">
+                <div class="book" data-content="book1.html" data-ar="book1-ar.glb">Book 1</div>
+                <div class="book" data-content="book2.html" data-ar="book2-ar.glb">Book 2</div>
+            </div>
+            <div class="shelf">
+                <div class="book" data-content="book3.html" data-ar="book3-ar.glb">Book 3</div>
+                <div class="book" data-content="book4.html" data-ar="book4-ar.glb">Book 4</div>
+            </div>
+            <!-- Repeat for 12 shelves -->
+        </div>
+
+        <!-- Book content area -->
+        <div id="book-content" class="book-content">
+            <button class="close-btn">Close</button>
+            <div id="content-area">Book content will load here.</div>
+        </div>
+    </div>
+
+    <!-- AR scene with VR mode disabled -->
+    <a-scene embedded arjs='trackingMethod: best; sourceType: webcam;'>
+        <a-marker preset="hiro">
+            <a-entity id="ar-book" gltf-model="" scale="0.1 0.1 0.1"></a-entity>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        // Select all book elements
+        const books = document.querySelectorAll('.book');
+        const bookContentDiv = document.getElementById('book-content');
+        const contentArea = document.getElementById('content-area');
+        const closeButton = document.querySelector('.close-btn');
+        const arBook = document.getElementById('ar-book');
+
+        // Function to open a book and AR
+        books.forEach(book => {
+            book.addEventListener('click', function() {
+                const bookFile = this.getAttribute('data-content');
+                const arModel = this.getAttribute('data-ar');
+
+                fetch(bookFile)
+                    .then(response => response.text())
+                    .then(data => {
+                        contentArea.innerHTML = data;
+                        bookContentDiv.style.display = 'block';
+                    })
+                    .catch(err => console.error('Error loading book:', err));
+
+                // Load AR model
+                arBook.setAttribute('gltf-model', arModel);
+            });
+        });
+
+        // Close the book content view
+        closeButton.addEventListener('click', function() {
+            bookContentDiv.style.display = 'none';
+            contentArea.innerHTML = '';
+            arBook.setAttribute('gltf-model', ''); // Reset AR model
+        });
+    </script>
+</body>
+</html>
