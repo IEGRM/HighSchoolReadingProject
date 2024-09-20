@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Library Room</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .library-room {
+            width: 80%;
+            height: 80%;
+            background-color: #d4af37;
+            border-radius: 20px;
+            position: relative;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+        .book-stand {
+            position: absolute;
+            width: 60%;
+            height: 90%;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: grid;
+            grid-template-rows: repeat(12, 1fr);
+            gap: 10px;
+            background-color: #8B4513;
+            border: 5px solid #654321;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .shelf {
+            background-color: #b5651d;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+        .book {
+            width: 40px;
+            height: 60px;
+            background-color: #3498db;
+            border: 2px solid #2980b9;
+            cursor: pointer;
+        }
+        .book:hover {
+            background-color: #2980b9;
+        }
+        .book-content {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            background-color: white;
+            border: 5px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: scroll;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="library-room">
+        <div class="book-stand">
+            <!-- Shelves -->
+            <div class="shelf">
+                <div class="book" data-content="book1.html">Book 1</div>
+                <div class="book" data-content="book2.html">Book 2</div>
+            </div>
+            <div class="shelf">
+                <div class="book" data-content="book3.html">Book 3</div>
+                <div class="book" data-content="book4.html">Book 4</div>
+            </div>
+            <!-- Repeat for 12 shelves -->
+        </div>
+
+        <!-- Book content area -->
+        <div id="book-content" class="book-content">
+            <button class="close-btn">Close</button>
+            <div id="content-area">Book content will load here.</div>
+        </div>
+    </div>
+
+    <script>
+        // Select all book elements
+        const books = document.querySelectorAll('.book');
+        const bookContentDiv = document.getElementById('book-content');
+        const contentArea = document.getElementById('content-area');
+        const closeButton = document.querySelector('.close-btn');
+
+        // Function to open a book
+        books.forEach(book => {
+            book.addEventListener('click', function() {
+                const bookFile = this.getAttribute('data-content');
+                fetch(bookFile)
+                    .then(response => response.text())
+                    .then(data => {
+                        contentArea.innerHTML = data;
+                        bookContentDiv.style.display = 'block';
+                    })
+                    .catch(err => console.error('Error loading book:', err));
+            });
+        });
+
+        // Close the book content view
+        closeButton.addEventListener('click', function() {
+            bookContentDiv.style.display = 'none';
+            contentArea.innerHTML = '';
+        });
+    </script>
+</body>
+</html>
