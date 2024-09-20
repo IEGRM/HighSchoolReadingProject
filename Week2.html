@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book 2</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+
+    <!-- Define a marker (QR Code or Image Marker) for bookshelves -->
+    <a-marker preset="hiro">
+      <!-- Bookshelf Model or Visual Representation -->
+      <a-box position="0 0.5 0" depth="0.1" height="1" width="1.5" color="#8B4513">
+        <!-- Books inside the bookshelf -->
+        <a-box position="-0.6 0.7 0.05" depth="0.05" height="0.4" width="0.3" color="#FFD700" class="clickable"></a-box>
+        <a-box position="0 0.7 0.05" depth="0.05" height="0.4" width="0.3" color="#FF4500" class="clickable"></a-box>
+        <a-box position="0.6 0.7 0.05" depth="0.05" height="0.4" width="0.3" color="#00CED1" class="clickable"></a-box>
+      </a-box>
+
+      <!-- Clicking a book will open the content -->
+      <a-entity id="book-content" position="0 0 0" visible="false">
+        <a-plane position="0 0.5 0" height="1" width="1.5" color="#FFFFFF">
+          <a-text value="Page 1: The adventure begins..." color="#000000" width="1.4" position="-0.7 0.4 0"></a-text>
+        </a-plane>
+      </a-entity>
+    </a-marker>
+
+    <a-entity camera></a-entity>
+
+    <script>
+      window.onload = function() {
+        const clickableElements = document.querySelectorAll('.clickable');
+        clickableElements.forEach(function(element) {
+          element.addEventListener('click', function() {
+            const bookContent = document.getElementById('book-content');
+            bookContent.setAttribute('visible', !bookContent.getAttribute('visible'));
+          });
+        });
+      };
+    </script>
+  </a-scene>
+</body>
+</html>
