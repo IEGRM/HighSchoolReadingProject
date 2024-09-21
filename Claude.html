@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AR Library Room</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ar.js/2.2.2/aframe-ar.min.js"></script>
+    <script>
+        AFRAME.registerComponent('book', {
+            schema: {
+                title: {type: 'string', default: 'Book'},
+                week: {type: 'int', default: 1}
+            },
+            init: function() {
+                this.el.addEventListener('click', () => this.openBook());
+            },
+            openBook: function() {
+                // Display book at 100% screen view
+                document.querySelector('#bookViewer').setAttribute('visible', true);
+                document.querySelector('#bookTitle').setAttribute('value', this.data.title);
+                document.querySelector('#bookContent').setAttribute('src', `book${this.data.week}.html`);
+            }
+        });
+
+        AFRAME.registerComponent('close-book', {
+            init: function() {
+                this.el.addEventListener('click', () => {
+                    document.querySelector('#bookViewer').setAttribute('visible', false);
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <!-- Camera and cursor -->
+        <a-entity camera look-controls wasd-controls position="0 1.6 0">
+            <a-cursor></a-cursor>
+        </a-entity>
+
+        <!-- Library room -->
+        <a-box color="#8B4513" width="5" height="3" depth="5" position="0 1.5 0" material="side: double; opacity: 0.5"></a-box>
+
+        <!-- Bookcases -->
+        <a-entity id="leftBookcase" position="-2.4 0 0" rotation="0 90 0">
+            <a-box color="#8B4513" width="4.8" height="3" depth="0.25"></a-box>
+            <a-entity id="leftShelves" position="0 -1.45 0.135"></a-entity>
+        </a-entity>
+
+        <a-entity id="centerBookcase1" position="-0.8 0 -2.4">
+            <a-box color="#8B4513" width="4.8" height="3" depth="0.25"></a-box>
+            <a-entity id="centerShelves1" position="0 -1.45 0.135"></a-entity>
+        </a-entity>
+
+        <a-entity id="centerBookcase2" position="0.8 0 -2.4">
+            <a-box color="#8B4513" width="4.8" height="3" depth="0.25"></a-box>
+            <a-entity id="centerShelves2" position="0 -1.45 0.135"></a-entity>
+        </a-entity>
+
+        <a-entity id="rightBookcase" position="2.4 0 0" rotation="0 -90 0">
+            <a-box color="#8B4513" width="4.8" height="3" depth="0.25"></a-box>
+            <a-entity id="rightShelves" position="0 -1.45 0.135"></a-entity>
+        </a-entity>
+
+        <!-- Book viewer -->
+        <a-entity id="bookViewer" visible="false" position="0 1.6 -1">
+            <a-plane width="1.5" height="2" color="white">
+                <a-text id="bookTitle" value="Book Title" align="center" position="0 0.9 0.01"></a-text>
+                <a-plane id="bookContent" width="1.4" height="1.8" position="0 -0.05 0.01" color="lightgray"></a-plane>
+                <a-text value="Close" align="center" position="0 -0.95 0.01" close-book></a-text>
+            </a-plane>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        function createShelves(parentEl) {
+            for (let i = 0; i < 12; i++) {
+                const shelf = document.createElement('a-entity');
+                shelf.setAttribute('geometry', {primitive: 'box', width: 4.8, height: 0.05, depth: 0.25});
+                shelf.setAttribute('material', 'color', '#8B4513');
+                shelf.setAttribute('position', `0 ${i * 0.25} 0`);
+                
+                const label = document.createElement('a-text');
+                label.setAttribute('value', `Readings for Week ${i + 1}`);
+                label.setAttribute('align', 'center');
+                label.setAttribute('position', '0 -0.05 0.13');
+                label.setAttribute('scale', '0.5 0.5 0.5');
+                shelf.appendChild(label);
+
+                parentEl.appendChild(shelf);
+
+                // Add example book to each shelf
+                const book = document.createElement('a-box');
+                book.setAttribute('color', 'red');
+                book.setAttribute('depth', '0.05');
+                book.setAttribute('height', '0.2');
+                book.setAttribute('width', '0.15');
+                book.setAttribute('position', `${-2.2 + Math.random() * 4.4} ${0.125} 0.15`);
+                book.setAttribute('book', `title: Book ${i + 1}; week: ${i + 1}`);
+                shelf.appendChild(book);
+            }
+        }
+
+        // Create shelves for each bookcase
+        createShelves(document.querySelector('#leftShelves'));
+        createShelves(document.querySelector('#centerShelves1'));
+        createShelves(document.querySelector('#centerShelves2'));
+        createShelves(document.querySelector('#rightShelves'));
+    </script>
+</body>
+</html>
